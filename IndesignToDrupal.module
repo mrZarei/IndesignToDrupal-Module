@@ -1,0 +1,91 @@
+<?php
+/**
+* @file
+* A description of what your module does.
+*/
+
+/**
+ * Implement hook_permission()
+ */
+/**
+ * Implements hook_element_info().
+ */
+function IndesignToDrupal_permission()
+{
+    return array(
+        'Import from html'=>array(
+            'title' => t('Indesign to drupal'),
+            'description' => t('Importing html file from indsign to drupal database.'),
+        ),
+    );
+}
+
+/**
+ * Implement hook_menu().
+ */
+function IndesignToDrupal_menu(){
+    $item=[];
+    $items['admin/config/content/htmlImport-setting'] = array(
+        'title' => 'Indesign to drupal settings',
+        'type' => MENU_NORMAL_ITEM,
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('IndesignToDrupal_setting_form'),
+        'access arguments' =>array('Import from html'),
+    );
+    return $items;
+}
+
+function IndesignToDrupal_setting_form($form,&$form_state){
+    $form=array();
+    $form['test']=array(
+        '#type'=>'textfield',
+        '#title'=>t('test'),
+    );
+    return $form;
+}
+
+/**
+ * Implements hook_field_extra_fields().
+ */
+function IndesignToDrupal_field_extra_fields()
+{
+    $extra['node']['article'] = array(
+        'form' => array(
+            'ITD_import_box' => array(
+                'label' => t('Import from HTML'),
+                'description' => t('Importing from Indesign html file'),
+                'weight' => 0,
+            ),
+        ),
+    );
+
+    return $extra;
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function IndesignToDrupal_form_alter(&$form, &$form_state, $form_id)
+{
+    if ($form_id == 'article_node_form') {
+        dpm($form);
+        $form['ITD_import_box'] = array(
+            '#type' => 'fieldset',
+            '#title' => t('HTML Import'),
+            '#collapsible' => True,
+            '#collapsed' => False,
+            '#group' => variable_get('domain_vertical_tab', 0) ? 'additional_settings' : '',
+        );
+        $form['ITD_import_box']['html_file'] = array(
+            '#type' => 'markup',
+            '#title' => t('input file'),
+            '#markup' => '<input type="file" id="itd-file" style="display:block"/>',
+        );
+        $form['ITD_import_box']['file_display'] = array(
+            '#type' => 'markup',
+            '#title' => t('Imported file display:'),
+            '#markup' => '<iframe id="idt-iframe"></iframe>',
+        );
+    }
+    return $form;
+}
