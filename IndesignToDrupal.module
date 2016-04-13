@@ -68,13 +68,17 @@ function IndesignToDrupal_field_extra_fields()
 function IndesignToDrupal_form_alter(&$form, &$form_state, $form_id)
 {
     if ($form_id == 'article_node_form') {
-        dpm($form);
         $form['ITD_import_box'] = array(
             '#type' => 'fieldset',
             '#title' => t('HTML Import'),
             '#collapsible' => True,
             '#collapsed' => False,
             '#group' => variable_get('domain_vertical_tab', 0) ? 'additional_settings' : '',
+            '#attached' => array(
+                'js'=> array(drupal_get_path('module', 'IndesignToDrupal') . '/js/itd.js' => array(
+                    'type' => 'file',
+                )),
+            ),
         );
         $form['ITD_import_box']['html_file'] = array(
             '#type' => 'markup',
@@ -86,6 +90,7 @@ function IndesignToDrupal_form_alter(&$form, &$form_state, $form_id)
             '#title' => t('Imported file display:'),
             '#markup' => '<iframe id="idt-iframe"></iframe>',
         );
+        dpm($form);
     }
     return $form;
 }
