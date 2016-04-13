@@ -1,0 +1,41 @@
+<?php
+/**
+* @file
+* A description of what your module does.
+*/
+
+/**
+ * Implement hook_permission()
+ */
+/**
+ * Implements hook_element_info().
+ */
+function IndsignToDrupal_permission()
+{
+    return array(
+        'Import from html'=>array(
+            'title' => t('Indesign to drupal'),
+            'description' => t('Importing html file from indsign to drupal database.'),
+        ),
+    );
+}
+
+/**
+ * Implement hook_menu().
+ */
+function IndesignToDrupal_menu(){
+    $item=[];
+    $items['admin/config/content/htmlImport-setting'] = array(
+        'title' => 'Indesign to drupal settings',
+        'type' => MENU_NORMAL_ITEM,
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('IndsignToDrupal_setting_form'),
+        'access arguments' =>array('Import from html'),
+    );
+    return $items;
+}
+
+function IndsignToDrupal_setting_form($form,&$form_state){
+    $form=array();
+    return $form;
+}

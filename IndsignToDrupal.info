@@ -1,0 +1,5 @@
+name = Indsign To Drupal
+description = This module is created to import html files which has been converted from Indesign into drupal database as a content type.
+core = 7.x
+version = 7.x-1.0.0
+configure = admin/config/content/htmlImport-setting
