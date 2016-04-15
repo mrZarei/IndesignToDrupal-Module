@@ -6,10 +6,12 @@
         attach: function () {
             document.getElementById('itd-file').addEventListener('change', fileChange, false);
             document.getElementById('convert-btn').addEventListener('click', convert);
-            var field=[
-                {name:'title',type:'textfield'},
-                {name:'field_preamble',type:'container'},
-                {name:'body',type:'container'}];
+            var fields = [
+                {name: 'title', type: 'textfield', class: ['rubrik']},
+                {name: 'field_preamble', type: 'container', class: ['ingress']},
+                {name: 'body', type: 'container', class: ['text', 'text_indrag', 'mellanrubrik']}
+            ];
+
             function fileChange(event) {
                 var file = event.target.files[0];
                 if (file) {
@@ -24,22 +26,61 @@
             }
 
             function convert() {
+                var fields = [
+                    {name: 'title', type: 'textfield', class: ['rubrik']},
+                    {name: 'field_preamble', type: 'container', class: ['ingress']},
+                    {name: 'body', type: 'container', class: ['text', 'text_indrag', 'mellanrubrik']}
+                ];
+                $.each(fields, function (index, value) {
+                    console.log(value);
+                    insertValue(value);
+                });
+            }
+
+            function insertValue(field) {
+                var content = '';
+                //get file content
                 var file = $("#idt-iframe").contents();
-                var titleSelector = Drupal.settings.itd.titleClasses
-                var bodySelector = Drupal.settings.itd.bodyClasses;
-                bodySelector = bodySelector.map(function (item) {
+
+                //add "." to class array to make a proper selector
+                var classes = $.map(field.class, function (item) {
                     return "." + item;
-                });
-                file.find(bodySelector.toString()).css("background", "yellow");
-                titleSelector =titleSelector.map(function(item){
-                    return "."+item;
-                });
-                var titles = file.find(titleSelector.toString());
-                var title = '';
-                $.each(titles, function () {
-                    title += $(this).text();
-                });
-                console.log(title);
+                })
+                var fileElements = file.find(classes.toString());
+
+                //We need to know the type of field to get proper element
+                // and insert data into it. Drupal puts fields in a div with class like "field-name" + name of field
+                var fieldName = field.name.replace(/_/ig, '-');
+                var inputElement = ".field-name-" + fieldName;
+                // Our code work on "Container" and "Textfield" types right now.
+                if (field.type == 'container') {
+                    //In the case of container we insert content in html format
+                    $.each(fileElements, function () {
+                        content += $(this).prop('outerHTML');
+                    });
+                    //In the case of container we should check if drupal uses "CKeditor" or not.
+                    //If it does then we should insert data into Iframe body
+                    if ($(inputElement + " iframe").length) {
+                        $(inputElement + " iframe").contents().find('body').html(content);
+                    }
+                    else if ($(inputElement + " textarea").length) {
+                        //if CKeditor does not apply to container
+                        $(inputElement + " textarea").val(content);
+                    }
+                    else {
+                        console.log("can not fine element: " + inputElement);
+                    }
+                }
+                else if (field.type == 'textfield') {
+                    //In the case of textfield we insert value of content
+                    $.each(fileElements, function () {
+                        content += $(this).text();
+                    });
+                    //Drupal use "edit"+field name as id for textfield fields
+                    //We can specify element on form by id.
+                    $('#edit-' + fieldName).val(content);
+                }
+
             }
         }
     }
