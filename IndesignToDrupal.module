@@ -67,7 +67,14 @@ function IndesignToDrupal_field_extra_fields()
  */
 function IndesignToDrupal_form_alter(&$form, &$form_state, $form_id)
 {
+
     if ($form_id == 'article_node_form') {
+        dpm($form);
+        $settings = array(
+            'titleClasses' => array('rubrik',),
+            'preambleClasses' => array('ingress'),
+            'bodyClasses' => array('text','text_indrag','mellanrubrik',),
+            );
         $form['ITD_import_box'] = array(
             '#type' => 'fieldset',
             '#title' => t('HTML Import'),
@@ -77,7 +84,8 @@ function IndesignToDrupal_form_alter(&$form, &$form_state, $form_id)
             '#attached' => array(
                 'js'=> array(drupal_get_path('module', 'IndesignToDrupal') . '/js/itd.js' => array(
                     'type' => 'file',
-                )),
+                    ),
+                ),
             ),
         );
         $form['ITD_import_box']['html_file'] = array(
@@ -88,9 +96,12 @@ function IndesignToDrupal_form_alter(&$form, &$form_state, $form_id)
         $form['ITD_import_box']['file_display'] = array(
             '#type' => 'markup',
             '#title' => t('Imported file display:'),
-            '#markup' => '<iframe id="idt-iframe"></iframe>',
+            '#markup' => '<iframe id="idt-iframe"></iframe><input type="button" id="convert-btn" value="Import">',
         );
-        dpm($form);
+        $form['#attached']['js'][] = array(
+            'data' => array('itd' => $settings),
+            'type' => 'setting',
+        );
     }
     return $form;
 }
