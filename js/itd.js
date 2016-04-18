@@ -6,11 +6,6 @@
         attach: function () {
             document.getElementById('itd-file').addEventListener('change', fileChange, false);
             document.getElementById('convert-btn').addEventListener('click', convert);
-            var fields = [
-                {name: 'title', type: 'textfield', class: ['rubrik']},
-                {name: 'field_preamble', type: 'container', class: ['ingress']},
-                {name: 'body', type: 'container', class: ['text', 'text_indrag', 'Mellanrubrik']}
-            ];
             function fileChange(event) {
                 var file = event.target.files[0];
                 if (file) {
@@ -25,13 +20,11 @@
             }
 
             function convert() {
-                var fields = [
-                    {name: 'title', type: 'textfield', class: ['rubrik']},
-                    {name: 'field_preamble', type: 'container', class: ['ingress']},
-                    {name: 'body', type: 'container', class: ['text', 'text_indrag', 'mellanrubrik']}
-                ];
+                var fields = Drupal.settings.itd.fields;
+                console.log(fields);
                 $.each(fields, function (index, value) {
-                    insertValue(value);
+                    if(value.class.length)
+                        insertValue(value);
                 });
             }
 
@@ -51,7 +44,7 @@
                 var fieldName = field.name.replace(/_/ig, '-');
                 var inputElement = ".field-name-" + fieldName;
                 // Our code work on "Container" and "Textfield" types right now.
-                if (field.type == 'container') {
+                if (field.type.search(/textarea/) >= 0) {
                     //In the case of container we insert content in html format
                     $.each(fileElements, function () {
                         //Define element to add to content.
@@ -89,7 +82,7 @@
                         console.log("can not fine element: " + inputElement);
                     }
                 }
-                else if (field.type == 'textfield') {
+                else if (field.type.search(/textfield/) >= 0) {
                     //In the case of textfield we insert value of content
                     $.each(fileElements, function () {
                         content += $(this).text();
