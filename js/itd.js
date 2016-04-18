@@ -9,16 +9,15 @@
             var fields = [
                 {name: 'title', type: 'textfield', class: ['rubrik']},
                 {name: 'field_preamble', type: 'container', class: ['ingress']},
-                {name: 'body', type: 'container', class: ['text', 'text_indrag', 'mellanrubrik']}
+                {name: 'body', type: 'container', class: ['text', 'text_indrag', 'Mellanrubrik']}
             ];
-
             function fileChange(event) {
                 var file = event.target.files[0];
                 if (file) {
                     var reader = new FileReader();
                     reader.onload = function (theFile) {
                         var text = theFile.target.result;
-                        $("#idt-iframe").contents().find("html").html(text);
+                        $("#itd-iframe").contents().find("html").html(text);
 
                     };
                     reader.readAsText(file);
@@ -32,7 +31,6 @@
                     {name: 'body', type: 'container', class: ['text', 'text_indrag', 'mellanrubrik']}
                 ];
                 $.each(fields, function (index, value) {
-                    console.log(value);
                     insertValue(value);
                 });
             }
@@ -40,7 +38,7 @@
             function insertValue(field) {
                 var content = '';
                 //get file content
-                var file = $("#idt-iframe").contents();
+                var file = $("#itd-iframe").contents();
 
                 //add "." to class array to make a proper selector
                 var classes = $.map(field.class, function (item) {
@@ -56,7 +54,27 @@
                 if (field.type == 'container') {
                     //In the case of container we insert content in html format
                     $.each(fileElements, function () {
-                        content += $(this).prop('outerHTML');
+                        //Define element to add to content.
+                        var element=$(document.createElement('p'));
+                        var fileElement=$(this);
+                        //For the styles which have been defined in CKedior custom style element type should
+                        //be changed, and custom class should be added.
+                        if(typeof(CKEDITOR) !== 'undefined'){
+                            if(typeof(CKEDITOR.stylesSet.registered.drupal)!=='undefined'){
+                                //browsing in CKeditor styles
+                                $.each(CKEDITOR.stylesSet.registered.drupal,function(key,value){
+                                    if(typeof(value.attributes.class !== 'undefined')){
+                                        if (fileElement.hasClass(value.attributes.class)) {
+                                            element=$(document.createElement(value.element));
+                                            element.addClass(value.attributes.class);
+                                            return false;
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                        element.html($(this).html());
+                        content += element.prop('outerHTML');
                     });
                     //In the case of container we should check if drupal uses "CKeditor" or not.
                     //If it does then we should insert data into Iframe body
