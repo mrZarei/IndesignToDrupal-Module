@@ -25,23 +25,71 @@ function IndesignToDrupal_permission()
  */
 function IndesignToDrupal_menu(){
     $item=[];
-    $items['admin/config/content/htmlImport-setting'] = array(
-        'title' => 'Indesign to drupal settings',
+    $items['admin/config/content/htmlImport'] = array(
+        'title' => 'settings',
         'type' => MENU_NORMAL_ITEM,
         'page callback' => 'drupal_get_form',
         'page arguments' => array('IndesignToDrupal_setting_form'),
         'access arguments' =>array('Import from html'),
+        'weight' => 1,
+    );
+    $items['admin/config/content/htmlImport/setting'] = array(
+        'title' => 'settings',
+        'type' => MENU_DEFAULT_LOCAL_TASK,
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('IndesignToDrupal_setting_form'),
+        'access arguments' =>array('Import from html'),
+        'weight' => 1,
+    );
+    $items['admin/config/content/htmlImport/Which-fields'] = array(
+        'title' => 'Fields',
+        'type' => MENU_LOCAL_TASK,
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('IndesignToDrupal_setting_fields_form'),
+        'access arguments' =>array('Import from html'),
+        'weight' => 2,
     );
     return $items;
 }
 
 function IndesignToDrupal_setting_form($form,&$form_state){
+
     $form=array();
-    $form['test']=array(
-        '#type'=>'textfield',
-        '#title'=>t('test'),
+    $fields=field_info_instances('node','article');
+    if(variable_get('itd_title_active',0)) {
+        $form['itd_title_classes'] = array(
+            '#type' => 'textarea',
+            '#title' => t('title'),
+            '#default_value' => variable_get('itd_title_classes', ''),
+        );
+    }
+    foreach($fields as $field){
+        if(variable_get('itd_'.$field['field_name'].'_active',0)) {
+            $form['itd_' . $field['field_name'] . '_classes'] = array(
+                '#type' => 'textarea',
+                '#title' => $field['label'],
+                '#default_value' => variable_get('itd_' . $field['field_name'] . '_classes', ''),
+            );
+        }
+    }
+    return system_settings_form($form);
+}
+
+function IndesignToDrupal_setting_fields_form($form,&$form_state){
+    $fields=field_info_instances('node','article');
+    $form['itd_title_active'] = array(
+        '#title' => t('title'),
+        '#type' => 'checkbox',
+        '#default_value' => variable_get('itd_title_active',0),
     );
-    return $form;
+    foreach($fields as $field){
+        $form["itd_".$field['field_name']."_active"] = array(
+            '#title' => $field['label'],
+            '#type' => 'checkbox',
+            '#default_value' => variable_get("itd_".$field['field_name']."_active",0),
+        );
+    }
+    return system_settings_form($form);
 }
 
 /**
@@ -69,12 +117,24 @@ function IndesignToDrupal_form_alter(&$form, &$form_state, $form_id)
 {
 
     if ($form_id == 'article_node_form') {
-        dpm($form);
-        $settings = array(
-            'titleClasses' => array('rubrik',),
-            'preambleClasses' => array('ingress'),
-            'bodyClasses' => array('text','text_indrag','mellanrubrik',),
-            );
+        $settings=array();
+        $fields=field_info_instances('node','article');
+        if (variable_get('itd_title_active', 0)) {
+            $classes = variable_get('itd_title_classes', '');
+            $classes = explode(",",$classes);
+            $name = 'title';
+            $type='textfield';
+            $settings[]=array('name'=>$name,'class'=>$classes,'type'=>$type);
+        }
+        foreach($fields as $field) {
+            if (variable_get('itd_' . $field['field_name'] . '_active', 0)) {
+                $classes = variable_get('itd_' . $field['field_name'] . '_classes', '');
+                $classes = explode(",",$classes);
+                $name = $field['field_name'];
+                $type=$field['widget']['type'];
+                $settings[]=array('name'=>$name,'class'=>$classes,'type'=>$type);
+            }
+        }
         $form['ITD_import_box'] = array(
             '#type' => 'fieldset',
             '#title' => t('HTML Import'),
@@ -96,10 +156,10 @@ function IndesignToDrupal_form_alter(&$form, &$form_state, $form_id)
         $form['ITD_import_box']['file_display'] = array(
             '#type' => 'markup',
             '#title' => t('Imported file display:'),
-            '#markup' => '<iframe id="idt-iframe"></iframe><input type="button" id="convert-btn" value="Import">',
+            '#markup' => '<iframe id="itd-iframe"></iframe><input type="button" id="convert-btn" value="Import">',
         );
         $form['#attached']['js'][] = array(
-            'data' => array('itd' => $settings),
+            'data' => array('itd' => array('fields' => $settings)),
             'type' => 'setting',
         );
     }
