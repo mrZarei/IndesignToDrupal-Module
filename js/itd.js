@@ -67,23 +67,25 @@
                             }
                         }
                         element.html($(this).html());
-                        $(this).css("background","yellow").fadeOut(1000);
+                        //$(this).css("background","yellow").fadeOut(1000);
                         content += element.prop('outerHTML');
                     });
                     //In the case of container we should check if drupal uses "CKeditor" or not.
                     //If it does then we should insert data into Iframe body
                     if ($(inputElement + " iframe").length) {
                         $(inputElement + " iframe").contents().find('body').html(content);
+                        fileElements.css("background","yellow").fadeOut(1000);
                     }
                     else if ($(inputElement + " textarea").length) {
                         //if CKeditor does not apply to container
                         $(inputElement + " textarea").val(content);
+                        fileElements.css("background","yellow").fadeOut(1000);
                     }
                     else {
                         console.log("can not fine element: " + inputElement);
                     }
                 }
-                else if (field.type.search(/textfield/) >= 0) {
+                else if ((field.type.search(/textfield/) >= 0) && $("input[name^='" + field.name+"'").length) {
                     //In the case of textfield we insert value of content
                     $.each(fileElements, function () {
                         content += $(this).text();
@@ -91,7 +93,7 @@
                     });
                     //Drupal use "edit"+field name as id for textfield fields
                     //We can specify element on form by id.
-                    $('#edit-' + fieldName).val(content);
+                    $("input[name^='" + field.name+"'").val(content);
                 }
 
             }
