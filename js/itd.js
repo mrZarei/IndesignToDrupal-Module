@@ -67,6 +67,7 @@
                             }
                         }
                         element.html($(this).html());
+                        $(this).css("background","yellow").fadeOut(1000);
                         content += element.prop('outerHTML');
                     });
                     //In the case of container we should check if drupal uses "CKeditor" or not.
@@ -86,6 +87,7 @@
                     //In the case of textfield we insert value of content
                     $.each(fileElements, function () {
                         content += $(this).text();
+                        $(this).css("background","yellow").fadeOut(1000);
                     });
                     //Drupal use "edit"+field name as id for textfield fields
                     //We can specify element on form by id.

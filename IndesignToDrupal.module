@@ -156,7 +156,11 @@ function IndesignToDrupal_form_alter(&$form, &$form_state, $form_id)
         $form['ITD_import_box']['file_display'] = array(
             '#type' => 'markup',
             '#title' => t('Imported file display:'),
-            '#markup' => '<iframe id="itd-iframe"></iframe><input type="button" id="convert-btn" value="Import">',
+            '#markup' => '<iframe id="itd-iframe" style="width: 50%;border: 1px solid #CCC;padding: 10px;margin: 10px 0;height: 400px;"></iframe>',
+        );
+        $form['ITD_import_box']['file_import_button'] = array(
+            '#type' => 'markup',
+            '#markup' => '<input type="button" id="convert-btn" value="Import" style="display: block;padding: 5px 15px;border: 1px solid;cursor: pointer;">',
         );
         $form['#attached']['js'][] = array(
             'data' => array('itd' => array('fields' => $settings)),
