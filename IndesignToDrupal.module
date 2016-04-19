@@ -7,9 +7,6 @@
 /**
  * Implement hook_permission()
  */
-/**
- * Implements hook_element_info().
- */
 function IndesignToDrupal_permission()
 {
     return array(
@@ -24,7 +21,7 @@ function IndesignToDrupal_permission()
  * Implement hook_menu().
  */
 function IndesignToDrupal_menu(){
-    $item=[];
+    $item=array();
     $items['admin/config/content/htmlImport'] = array(
         'title' => 'Indesign to Drupal',
         'type' => MENU_NORMAL_ITEM,
@@ -115,7 +112,6 @@ function IndesignToDrupal_field_extra_fields()
 
     return $extra;
 }
-
 /**
  * Implements hook_form_alter().
  */
