@@ -85,7 +85,7 @@
                         console.log("can not fine element: " + inputElement);
                     }
                 }
-                else if ((field.type.search(/textfield/) >= 0) && $("input[name^='" + field.name+"'").length) {
+                else if ((field.type.search(/textfield/) >= 0) && $("input[type='text'][name^='" + field.name+"'").length) {
                     //In the case of textfield we insert value of content
                     $.each(fileElements, function () {
                         content += $(this).text();
@@ -93,7 +93,7 @@
                     });
                     //Drupal use "edit"+field name as id for textfield fields
                     //We can specify element on form by id.
-                    $("input[name^='" + field.name+"'").val(content);
+                    $("input[type='text'][name^='" + field.name+"'").val(content);
                 }
 
             }
