@@ -38,7 +38,7 @@ function _html_to_node($html_file,$images,$settings){
                             $image_info=_parse_image_value($image_value);
                             dpm($image_info);
                             if(count($image_info)) {
-                                $image_name = $image_info['image_name'];
+                                $image_name = trim($image_info['image_name']);
                                 $image_sid = _move_from_temp($images[$image_name],$image_info);
                                 $atom = scald_atom_load($image_sid);
                                 $render_image = _atom_image_wrapper($atom);
@@ -64,7 +64,7 @@ function _html_to_node($html_file,$images,$settings){
                     else if($is_field_atom_reference){
                         $image_info=_parse_image_value($node->nodeValue);
                         if(count($image_info)) {
-                            $image_name = $image_info['image_name'];
+                            $image_name = trim($image_info['image_name']);
                             $image_sid = _move_from_temp($images[$image_name],$image_info);
                             $tag = $image_sid;
                         }
