@@ -18,7 +18,7 @@ function _html_to_node($html_file,$images,$settings){
     foreach($settings as $field){
         $is_field_text_area=preg_match('/text_textarea/i',$field['type']);
         $is_field_atom_reference=preg_match('/atom_reference/i',$field['type']);
-        $image_pattern='/^img_/i';
+        $image_pattern='/^\*\*Bild:/i';
         $query=implode("' or @class='",$field['class']);
         $query = "//*[@class='" . $query . "']";
         $elements = $xpath->query($query);
@@ -32,8 +32,11 @@ function _html_to_node($html_file,$images,$settings){
                     //Check if field is text area.
                     if($is_field_text_area) {
                         //Check if element is image then upload related image and wrap it in img tag.
-                        if(preg_match($image_pattern,$class)){
-                            $image_info=_parse_image_value($node->nodeValue);
+                        if(preg_match($image_pattern,$node->nodeValue)){
+                            $image_value = preg_replace($image_pattern,'',$node->nodeValue);
+                            dpm($image_value);
+                            $image_info=_parse_image_value($image_value);
+                            dpm($image_info);
                             if(count($image_info)) {
                                 $image_name = $image_info['image_name'];
                                 $image_sid = _move_from_temp($images[$image_name],$image_info);
