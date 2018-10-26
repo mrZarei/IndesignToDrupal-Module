@@ -1,6 +1,6 @@
 
-//Html to Drupal
-//this module has been implemented intent to importing articles from Word document into drupal.
+## Html to Drupal
+# this module has been implemented intent to importing articles from Word document into drupal.
 
 
 
